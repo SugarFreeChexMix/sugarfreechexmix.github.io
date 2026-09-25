@@ -7,7 +7,7 @@
     <!-- Google Fonts for Live Studio Engine -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Oswald:wght@500;700&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Oswald:wght@500;700&family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Space+Grotesk:wght@500;700&family=Poppins:wght@400;600;700&family=Bebas+Neue&family=Caveat:wght@600;700&family=IBM+Plex+Mono:wght@500;700&display=swap" rel="stylesheet">
     
     <style id="themeStyles">
         :root {
@@ -54,6 +54,98 @@
             font-family: monospace; letter-spacing: 0.03em;
             pointer-events: none; user-select: none;
         }
+
+        .app-launcher-btn {
+            position: fixed; bottom: 14px; right: 14px; z-index: 10;
+            background: var(--card-bg); border: 1px solid var(--border); color: var(--text-main);
+            font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em;
+            padding: 9px 16px; border-radius: 9999px; cursor: pointer;
+            box-shadow: 0 6px 18px -6px rgba(0,0,0,0.5);
+            transition: all 0.2s ease;
+        }
+        .app-launcher-btn:hover { background: var(--accent); color: #0f172a; border-color: var(--accent); transform: translateY(-2px); }
+        .app-launcher-btn:active { transform: translateY(0) scale(0.96); }
+        body.appmenu-open .app-launcher-btn { opacity: 0; pointer-events: none; }
+
+        /* Lava Lamp Background — metaball blobs using an SVG "goo" filter so they merge
+           and separate with crisp edges, like real lava lamp wax, instead of fuzzy blur. */
+        #motionBgContainer {
+            position: fixed; inset: 0; z-index: 0; overflow: hidden;
+            pointer-events: none; opacity: 0; transition: opacity 0.9s ease;
+            background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.03), transparent 60%);
+        }
+        body.motion-bg-on #motionBgContainer { opacity: 0.9; }
+        .lava-goo-group {
+            position: absolute; inset: -15%;
+            filter: url(#lavaGoo);
+        }
+        .motion-blob {
+            position: absolute; border-radius: 50%;
+            background: var(--motion-bg-color, #38bdf8);
+            will-change: transform;
+        }
+        .motion-blob.shade-light { background: var(--motion-bg-light, #7dd3fc); }
+        .motion-blob.shade-dark { background: var(--motion-bg-dark, #0c4a6e); }
+
+        /* Animations fully pause (not just hidden) when the feature is off, so it costs
+           nothing in the background — this is the default state on every page load. */
+        body:not(.motion-bg-on) .motion-blob { animation-play-state: paused; }
+
+        .motion-blob.b1 { width: 190px; height: 190px; top: 78%; left: 12%; animation: lavaRise1 22s ease-in-out infinite alternate; }
+        .motion-blob.b2 { width: 240px; height: 240px; top: 85%; left: 32%; animation: lavaRise2 27s ease-in-out infinite alternate; }
+        .motion-blob.b3 { width: 160px; height: 160px; top: 90%; left: 55%; animation: lavaRise3 19s ease-in-out infinite alternate; }
+        .motion-blob.b4 { width: 220px; height: 220px; top: 82%; left: 70%; animation: lavaRise4 25s ease-in-out infinite alternate; }
+        .motion-blob.b5 { width: 150px; height: 150px; top: 95%; left: 20%; animation: lavaRise5 31s ease-in-out infinite alternate; }
+        .motion-blob.b6 { width: 200px; height: 200px; top: 88%; left: 85%; animation: lavaRise6 23s ease-in-out infinite alternate; }
+
+        @keyframes lavaRise1 {
+            0%   { transform: translate(0, 0) scale(1); }
+            30%  { transform: translate(30px, -260px) scale(1.15); }
+            55%  { transform: translate(-25px, -470px) scale(0.9); }
+            80%  { transform: translate(40px, -680px) scale(1.05); }
+            100% { transform: translate(0, -900px) scale(0.85); }
+        }
+        @keyframes lavaRise2 {
+            0%   { transform: translate(0, 0) scale(1); }
+            30%  { transform: translate(-40px, -240px) scale(0.92); }
+            55%  { transform: translate(35px, -430px) scale(1.12); }
+            80%  { transform: translate(-30px, -650px) scale(0.95); }
+            100% { transform: translate(0, -880px) scale(1.1); }
+        }
+        @keyframes lavaRise3 {
+            0%   { transform: translate(0, 0) scale(1); }
+            30%  { transform: translate(25px, -280px) scale(1.2); }
+            55%  { transform: translate(-30px, -520px) scale(0.85); }
+            80%  { transform: translate(20px, -760px) scale(1.1); }
+            100% { transform: translate(0, -1000px) scale(0.9); }
+        }
+        @keyframes lavaRise4 {
+            0%   { transform: translate(0, 0) scale(1); }
+            30%  { transform: translate(-35px, -250px) scale(1.08); }
+            55%  { transform: translate(30px, -460px) scale(0.9); }
+            80%  { transform: translate(-25px, -670px) scale(1.15); }
+            100% { transform: translate(0, -900px) scale(0.95); }
+        }
+        @keyframes lavaRise5 {
+            0%   { transform: translate(0, 0) scale(1); }
+            30%  { transform: translate(20px, -300px) scale(0.88); }
+            55%  { transform: translate(-35px, -560px) scale(1.18); }
+            80%  { transform: translate(25px, -820px) scale(0.92); }
+            100% { transform: translate(0, -1080px) scale(1.05); }
+        }
+        @keyframes lavaRise6 {
+            0%   { transform: translate(0, 0) scale(1); }
+            30%  { transform: translate(-30px, -260px) scale(1.12); }
+            55%  { transform: translate(30px, -480px) scale(0.88); }
+            80%  { transform: translate(-20px, -700px) scale(1.08); }
+            100% { transform: translate(0, -930px) scale(0.9); }
+        }
+
+        .motion-toggle-label {
+            display: flex; align-items: center; gap: 8px; font-size: 0.85rem;
+            color: var(--text-main); cursor: pointer;
+        }
+        .motion-toggle-label input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
 
         .dashboard {
             position: relative;
@@ -133,6 +225,46 @@
         }
         .side-cal-holiday-name { color: var(--text-main); font-weight: 600; }
         .side-cal-holiday-date { color: var(--text-muted); font-size: 0.72rem; white-space: nowrap; }
+
+        /* Countdown card + its set/edit modal */
+        .cd-add-card { cursor: pointer; align-items: center; justify-content: center; text-align: center; }
+        .cd-add-text { font-size: 0.78rem; color: var(--accent); font-weight: 700; margin-top: 4px; }
+        .cd-card { cursor: pointer; }
+
+        .cd-scrim {
+            position: fixed; inset: 0; z-index: 1200;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        body.cd-open .cd-scrim { opacity: 1; pointer-events: auto; }
+
+        .cd-panel {
+            position: fixed; z-index: 1201; top: 50%; left: 50%;
+            width: 90%; max-width: 320px;
+            background: linear-gradient(165deg, var(--card-bg) 0%, var(--bg-color) 100%);
+            border: 1px solid var(--border);
+            border-radius: calc(var(--radius) * 1.1);
+            padding: 26px 22px; text-align: left;
+            box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.7);
+            transform: translate(-50%, -50%) scale(0.9);
+            opacity: 0; pointer-events: none;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+        }
+        body.cd-open .cd-panel { transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; }
+
+        .cd-panel-title { font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px; padding-right: 30px; }
+        .cd-panel-sub { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 18px; }
+        .cd-field { margin-bottom: 12px; }
+        .cd-field label { display: block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+        .cd-input {
+            width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border);
+            border-radius: 8px; padding: 9px 10px; color: var(--text-main); font-size: 0.85rem;
+        }
+        .cd-input:disabled { opacity: 0.45; }
+        .cd-actions { display: flex; gap: 10px; margin-top: 6px; }
+        .cd-actions .translator-btn { flex: 1; }
 
         @media (max-width: 560px) {
             .side-dashboard, .side-calendar { max-height: none; }
@@ -875,7 +1007,29 @@
     </style>
 </head>
 <body class="hide-cheat-apps">
-    <div class="version-tag">V2.4</div>
+    <svg style="position:absolute; width:0; height:0;">
+        <defs>
+            <filter id="lavaGoo">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="9" result="blur" />
+                <feColorMatrix in="blur" mode="matrix"
+                    values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -10"
+                    result="goo" />
+                <feBlend in="SourceGraphic" in2="goo" />
+            </filter>
+        </defs>
+    </svg>
+    <div id="motionBgContainer">
+        <div class="lava-goo-group">
+            <div class="motion-blob b1"></div>
+            <div class="motion-blob b2 shade-light"></div>
+            <div class="motion-blob b3"></div>
+            <div class="motion-blob b4 shade-dark"></div>
+            <div class="motion-blob b5 shade-light"></div>
+            <div class="motion-blob b6"></div>
+        </div>
+    </div>
+    <div class="version-tag">V3.1</div>
+    <button class="app-launcher-btn" onclick="openAppMenu()">APP</button>
 
     <div id="pwScrim" class="pw-scrim" onclick="closePasswordModal()"></div>
     <div id="pwPanel" class="pw-panel" onclick="event.stopPropagation()">
@@ -898,6 +1052,33 @@
             <button onclick="pwClear()">C</button>
             <button onclick="pwPress('0')">0</button>
             <button onclick="pwBackspace()">&#9003;</button>
+        </div>
+    </div>
+
+    <div id="cdScrim" class="cd-scrim" onclick="closeCountdownModal()"></div>
+    <div id="cdPanel" class="cd-panel" onclick="event.stopPropagation()">
+        <button class="app-nav-btn close-btn" style="position:absolute; top:14px; right:14px;" onclick="closeCountdownModal()" aria-label="Close">&times;</button>
+        <div class="cd-panel-title">Set Countdown</div>
+        <div class="cd-panel-sub">Pick a day, and a time if you want one</div>
+        <div class="cd-field">
+            <label>Name</label>
+            <input type="text" id="cdName" class="cd-input" placeholder="e.g. Winter Break" maxlength="40">
+        </div>
+        <div class="cd-field">
+            <label>Date</label>
+            <input type="date" id="cdDate" class="cd-input">
+        </div>
+        <div class="cd-field">
+            <label>Time (optional)</label>
+            <input type="time" id="cdTime" class="cd-input">
+        </div>
+        <label class="motion-toggle-label" style="margin: 4px 0 16px;">
+            <input type="checkbox" id="cdAllDay" onchange="toggleCountdownAllDay(this.checked)">
+            All day (counts down to end of day)
+        </label>
+        <div class="cd-actions">
+            <button class="translator-btn" onclick="saveCountdown()">Save</button>
+            <button id="cdClearBtn" class="theme-share-btn" onclick="clearCountdown()">Clear</button>
         </div>
     </div>
 
@@ -1117,6 +1298,11 @@
             return `${hrs}:${String(mins).padStart(2, '0')} ${suffix}`;
         }
 
+        // Tracks the schedule currently rendered as DOM rows, so updateDashboard() only
+        // rebuilds that list when the day/override actually changes instead of every second.
+        let lastRenderedDay = null;
+        let scheduleRowEls = [];
+
         function updateDashboard() {
             const now = new Date();
             const liveDay = now.getDay();
@@ -1138,9 +1324,13 @@
 
             const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
             dayTitle.innerText = isOverride ? `${days[currentDay]}'s Schedule (Using Today's Clock)` : `${days[currentDay]}'s Schedule`;
-            scheduleList.innerHTML = "";
 
             if (!schedule[currentDay]) {
+                if (lastRenderedDay !== currentDay) {
+                    scheduleList.innerHTML = "";
+                    scheduleRowEls = [];
+                    lastRenderedDay = currentDay;
+                }
                 statusBadge.className = "status-badge status-off";
                 statusBadge.innerText = "Weekend";
                 currentPeriodEl.innerText = "No School Today";
@@ -1151,20 +1341,29 @@
                 return;
             }
 
+            // Only rebuild the row elements when the selected day actually changes.
+            if (lastRenderedDay !== currentDay) {
+                scheduleList.innerHTML = "";
+                scheduleRowEls = schedule[currentDay].map(item => {
+                    const row = document.createElement("div");
+                    row.className = "schedule-row";
+                    row.innerHTML = `<span>${item.name}</span><span>${formatTime12(item.start)} - ${formatTime12(item.end)}</span>`;
+                    scheduleList.appendChild(row);
+                    return row;
+                });
+                lastRenderedDay = currentDay;
+            }
+
             // Use the SELECTED day's period list, but always compare against the real current
             // time — this is what makes "run a Friday schedule on Monday" actually work live.
             let activeItem = null;
-            schedule[currentDay].forEach(item => {
+            schedule[currentDay].forEach((item, i) => {
                 const startMins = timeToMinutes(item.start);
                 const endMins = timeToMinutes(item.end);
-                const row = document.createElement("div");
-                row.className = "schedule-row";
-                row.innerHTML = `<span>${item.name}</span><span>${formatTime12(item.start)} - ${formatTime12(item.end)}</span>`;
-                if (currentMin >= startMins && currentMin < endMins) {
-                    activeItem = item;
-                    row.className += " active-row";
-                }
-                scheduleList.appendChild(row);
+                const isActive = currentMin >= startMins && currentMin < endMins;
+                if (isActive) activeItem = item;
+                const row = scheduleRowEls[i];
+                if (row) row.className = "schedule-row" + (isActive ? " active-row" : "");
             });
 
             if (activeItem) {
@@ -1262,6 +1461,8 @@
             html += endOfWeek
                 ? tcCard("&#127881;", "End of Week", formatDuration(endOfWeek - now), formatWhen(endOfWeek, now))
                 : tcCard("&#127881;", "End of Week", "--:--:--", "No Friday schedule found");
+
+            html += countdownCardHTML();
 
             grid.innerHTML = html;
         }
@@ -1494,6 +1695,105 @@
             </div>`;
         }
 
+        // --- Custom Countdown — user-set target date/time, shown as a card in Live Stats & Time Counter ---
+        let userCountdown = JSON.parse(localStorage.getItem('htla-countdown') || 'null');
+
+        function openCountdownModal() {
+            const nameInput = document.getElementById('cdName');
+            const dateInput = document.getElementById('cdDate');
+            const timeInput = document.getElementById('cdTime');
+            const allDayCheck = document.getElementById('cdAllDay');
+            const clearBtn = document.getElementById('cdClearBtn');
+
+            if (userCountdown) {
+                const d = new Date(userCountdown.target);
+                nameInput.value = userCountdown.label || '';
+                dateInput.value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                allDayCheck.checked = !!userCountdown.allDay;
+                timeInput.value = userCountdown.allDay ? '' : `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+                timeInput.disabled = userCountdown.allDay;
+                clearBtn.style.display = 'inline-block';
+            } else {
+                nameInput.value = '';
+                dateInput.value = '';
+                timeInput.value = '';
+                timeInput.disabled = false;
+                allDayCheck.checked = false;
+                clearBtn.style.display = 'none';
+            }
+            document.body.classList.add('cd-open');
+        }
+
+        function closeCountdownModal() {
+            document.body.classList.remove('cd-open');
+        }
+
+        function toggleCountdownAllDay(checked) {
+            document.getElementById('cdTime').disabled = checked;
+        }
+
+        function saveCountdown() {
+            const name = document.getElementById('cdName').value.trim() || 'Countdown';
+            const dateVal = document.getElementById('cdDate').value;
+            if (!dateVal) { alert('Pick a date first.'); return; }
+            const allDay = document.getElementById('cdAllDay').checked;
+            const timeVal = document.getElementById('cdTime').value;
+
+            let target;
+            if (allDay || !timeVal) {
+                target = new Date(dateVal + 'T23:59:59');
+            } else {
+                target = new Date(dateVal + 'T' + timeVal + ':00');
+            }
+
+            userCountdown = {
+                label: name,
+                target: target.toISOString(),
+                created: new Date().toISOString(),
+                allDay: allDay || !timeVal
+            };
+            localStorage.setItem('htla-countdown', JSON.stringify(userCountdown));
+            closeCountdownModal();
+            updateSideDashboard();
+            updateTimeCounterPanel();
+        }
+
+        function clearCountdown() {
+            userCountdown = null;
+            localStorage.removeItem('htla-countdown');
+            closeCountdownModal();
+            updateSideDashboard();
+            updateTimeCounterPanel();
+        }
+
+        function countdownCardHTML() {
+            if (!userCountdown) {
+                return `
+                <div class="tc-card cd-add-card" onclick="openCountdownModal()">
+                    <div class="tc-card-icon">&#8853;</div>
+                    <div class="tc-card-label">Countdown</div>
+                    <div class="cd-add-text">+ Set a countdown</div>
+                </div>`;
+            }
+            const now = new Date();
+            const target = new Date(userCountdown.target);
+            const created = new Date(userCountdown.created);
+            const remainMs = target - now;
+            const totalMs = target - created;
+            const elapsedMs = now - created;
+            const pct = totalMs > 0 ? Math.min(100, Math.max(0, (elapsedMs / totalMs) * 100)) : 100;
+            const done = remainMs <= 0;
+            return `
+            <div class="tc-card cd-card" onclick="openCountdownModal()">
+                <div class="tc-card-icon">&#8987;</div>
+                <div class="tc-card-label">${userCountdown.label}</div>
+                <div class="tc-card-value">${done ? "Done!" : formatDuration(remainMs)}</div>
+                <div class="tc-card-sub">${done ? "Tap to set a new one" : "Tap to edit"}</div>
+                <div class="tc-progress-track"><div class="tc-progress-fill" style="width:${pct}%"></div></div>
+                <div class="tc-progress-pct">${Math.floor(pct)}% complete</div>
+            </div>`;
+        }
+
         function updateTimeCounterPanel() {
             const grid = document.getElementById("tcGrid");
             if (!grid) return;
@@ -1552,10 +1852,16 @@
                 ? tcCard("&#127881;", "End of Week", formatDuration(endOfWeek - now), formatWhen(endOfWeek, now))
                 : tcCard("&#127881;", "End of Week", "--:--:--", "No Friday schedule found");
 
+            html += countdownCardHTML();
+
             grid.innerHTML = html;
         }
 
         // --- KEYWORD TRACKING SEQUENCER (APP opens the menu, COL/GAME jump straight to a tool, TH unlocks/toggles cheats) ---
+        // TH_TRIGGER_ENABLED is a temporary kill switch: set to false to disable typing "th" to
+        // reach games/cheats without deleting any of the underlying unlock code. Flip back to
+        // true to restore it exactly as it was.
+        const TH_TRIGGER_ENABLED = false;
         let typedBuffer = "";
         let cheatAppsHidden = true; // hidden by default whenever the page loads
         let cheatsUnlocked = false;
@@ -1571,7 +1877,7 @@
                 quickOpenTool("customize", "theme", "Colorways Studio"); typedBuffer = "";
             } else if (typedBuffer.endsWith("GAME")) {
                 quickOpenTool("games", "game", "Chimp Dash"); typedBuffer = "";
-            } else if (typedBuffer.endsWith("TH")) {
+            } else if (TH_TRIGGER_ENABLED && typedBuffer.endsWith("TH")) {
                 handleThTrigger(); typedBuffer = "";
             }
         });
@@ -1650,16 +1956,19 @@
             '--accent': '#38bdf8', '--bg-color': '#0f172a', '--card-bg': '#1e293b',
             '--accent-success': '#4ade80', '--accent-break': '#fbbf24',
             '--font-family': '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-            '--radius': '16px', '--tint': '0.95', '--shadow-intensity': '0.5'
+            '--radius': '16px', '--tint': '0.95', '--shadow-intensity': '0.5',
+            '--motion-bg-color': '#38bdf8', 'motionBgEnabled': false
         };
         const userTheme = Object.assign({}, DEFAULT_THEME, JSON.parse(localStorage.getItem('htla-theme') || '{}'));
 
         function applyStoredTheme() {
             const root = document.documentElement;
             Object.keys(userTheme).forEach(key => {
-                if(key !== '--tint') root.style.setProperty(key, userTheme[key]);
+                if (key !== '--tint' && key.startsWith('--')) root.style.setProperty(key, userTheme[key]);
             });
             updateTint(Math.round(parseFloat(userTheme['--tint']) * 100), false);
+            document.body.classList.toggle('motion-bg-on', userTheme.motionBgEnabled === true || userTheme.motionBgEnabled === 'true');
+            applyMotionColorShades(userTheme['--motion-bg-color']);
         }
 
         // Syncs the on-screen studio controls to match the stored theme.
@@ -1679,6 +1988,31 @@
             document.getElementById('rngRadius').value = parseInt(userTheme['--radius']);
             document.getElementById('rngTint').value = Math.round(parseFloat(userTheme['--tint']) * 100);
             document.getElementById('rngShadow').value = Math.round(parseFloat(userTheme['--shadow-intensity']) * 100);
+            document.getElementById('motionBgToggle').checked = userTheme.motionBgEnabled === true || userTheme.motionBgEnabled === 'true';
+            document.getElementById('cpMotionColor').value = userTheme['--motion-bg-color'];
+            document.getElementById('txtMotionColor').value = userTheme['--motion-bg-color'];
+        }
+
+        function toggleMotionBackground(enabled) {
+            userTheme.motionBgEnabled = !!enabled;
+            localStorage.setItem('htla-theme', JSON.stringify(userTheme));
+            document.body.classList.toggle('motion-bg-on', userTheme.motionBgEnabled);
+        }
+
+        // Derives lighter/darker variants of the chosen color so the blobs have visual
+        // depth instead of being one flat, muddy color.
+        function applyMotionColorShades(color) {
+            document.documentElement.style.setProperty('--motion-bg-color', color);
+            document.documentElement.style.setProperty('--motion-bg-light', shadeHex(color, 26));
+            document.documentElement.style.setProperty('--motion-bg-dark', shadeHex(color, -30));
+        }
+
+        function updateMotionBgColor(color) {
+            userTheme['--motion-bg-color'] = color;
+            applyMotionColorShades(color);
+            localStorage.setItem('htla-theme', JSON.stringify(userTheme));
+            const txt = document.getElementById('txtMotionColor');
+            if (txt) txt.value = color;
         }
 
         function updateThemeProp(prop, value) {
@@ -1760,6 +2094,26 @@
         // only shown for real once cheatsUnlocked is true. Otherwise they're folded into a
         // single generic "Bug fixes and improvements" line for that version.
         const CHANGELOG = [
+            { version: "V3.1", entries: [
+                { text: "Temporarily disabled the \"th\" trigger for games/cheats — code is still there, just switched off for now", secret: true }
+            ]},
+            { version: "V3.0", entries: [
+                { text: "Performance pass: Lava Lamp Background now fully pauses (zero cost) when turned off, uses fewer blobs and less blur when on", secret: false },
+                { text: "The main schedule panel no longer rebuilds its entire period list every second — only when the day actually changes", secret: false }
+            ]},
+            { version: "V2.9", entries: [
+                { text: "Added a custom Countdown card to Live Stats and Time Counter — pick a date (and optional time) and it counts down live with hours/min/sec and a % complete meter", secret: false }
+            ]},
+            { version: "V2.8", entries: [
+                { text: "Added a small \"APP\" button in the corner to open Study Apps with a tap, alongside typing APP", secret: false }
+            ]},
+            { version: "V2.7", entries: [
+                { text: "Rebuilt the Lava Lamp Background with a proper metaball \"goo\" effect so blobs merge and separate with crisp edges instead of looking like blurry low-res smears, plus more blobs and light/dark color depth", secret: false }
+            ]},
+            { version: "V2.5", entries: [
+                { text: "Added 5 new fonts to Colorways Studio: Space Grotesk, Poppins, Bebas Neue, Caveat, and IBM Plex Mono", secret: false },
+                { text: "Added a Lava Lamp Background setting — pick a color and it warps and morphs across the screen behind everything", secret: false }
+            ]},
             { version: "V2.4", entries: [
                 { text: "Added a Change Log app under Customize", secret: false }
             ]},
@@ -3502,7 +3856,25 @@ const COMMON_WORDS = [{"en":"hello","es":"hola","cat":"Greetings"},{"en":"goodby
                             <option value='"JetBrains Mono", monospace'>JetBrains Technical Mono</option>
                             <option value='"Playfair Display", serif'>Playfair Elegant Serif</option>
                             <option value='"Fredoka", sans-serif'>Fredoka Geometric Rounded</option>
+                            <option value='"Space Grotesk", sans-serif'>Space Grotesk Modern</option>
+                            <option value='"Poppins", sans-serif'>Poppins Friendly Sans</option>
+                            <option value='"Bebas Neue", sans-serif'>Bebas Neue Condensed</option>
+                            <option value='"Caveat", cursive'>Caveat Handwritten</option>
+                            <option value='"IBM Plex Mono", monospace'>IBM Plex Technical Mono</option>
                         </select>
+                    </div>
+                    <div class="studio-group">
+                        <label>Lava Lamp Background</label>
+                        <label class="motion-toggle-label">
+                            <input type="checkbox" id="motionBgToggle" onchange="toggleMotionBackground(this.checked)">
+                            Enable a warping color background
+                        </label>
+                        <div class="studio-row-inputs" style="margin-top: 10px;">
+                            <div class="color-picker-wrapper">
+                                <input type="color" id="cpMotionColor" value="#38bdf8" oninput="updateMotionBgColor(this.value)">
+                            </div>
+                            <input type="text" id="txtMotionColor" class="studio-input-txt" value="#38bdf8" readonly>
+                        </div>
                     </div>
                     <div class="studio-group">
                         <label>Sheet Opacity Tint</label>
