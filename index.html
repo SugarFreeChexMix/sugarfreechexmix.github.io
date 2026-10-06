@@ -177,19 +177,20 @@
             gap: 20px;
         }
         .dashboard { order: 2; }
-        .side-dashboard, .side-calendar {
+        .side-col {
+            display: none; flex-direction: column; gap: 20px;
             max-width: 500px; width: 100%;
-            padding: 30px; text-align: left;
-            display: none;
-            max-height: 620px; overflow-y: auto;
         }
-        .side-dashboard { order: 3; }
-        .side-calendar { order: 1; }
-        body.advdash-open .side-dashboard,
-        body.advdash-open .side-calendar {
-            display: block;
+        .side-col-left { order: 1; }
+        .side-col-right { order: 3; }
+        body.advdash-open .side-col {
+            display: flex;
             animation: sideDashIn 0.45s cubic-bezier(0.16, 1, 0.3, 1);
         }
+        .side-dashboard, .side-calendar {
+            width: 100%; padding: 30px; text-align: left;
+        }
+        .side-widget-panel { width: 100%; padding: 22px 24px; text-align: left; }
         @keyframes sideDashIn {
             from { opacity: 0; transform: translateX(16px); }
             to { opacity: 1; transform: translateX(0); }
@@ -275,7 +276,6 @@
         .cd-actions .translator-btn { flex: 1; }
 
         /* Shared divider + section title for the two Advanced Dashboard bonus widgets */
-        .side-widget-divider { height: 1px; background: var(--border); margin: 20px 0 16px; }
         .side-widget-title {
             font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700;
             color: var(--text-muted); margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
@@ -307,10 +307,6 @@
         }
         .stopwatch-controls { display: flex; gap: 10px; }
         .stopwatch-controls .translator-btn, .stopwatch-controls .theme-share-btn { flex: 1; text-align: center; }
-
-        @media (max-width: 560px) {
-            .side-dashboard, .side-calendar { max-height: none; }
-        }
 
         /* Day picker — "Different Schedule?" button + popup */
         .day-picker-btn {
@@ -643,6 +639,11 @@
             border-radius: 8px;
         }
         .radius-preset-btn:hover { background: var(--accent); color: #0f172a; border-color: var(--accent); }
+        .secret-code-group { margin-top: 20px; padding-top: 18px; border-top: 1px dashed var(--border); }
+        .secret-code-group .studio-row-inputs .cd-input { flex-grow: 1; }
+        .secret-code-msg { font-size: 0.78rem; margin-top: 9px; min-height: 16px; font-weight: 600; }
+        .secret-code-msg.secret-code-success { color: var(--accent-success); }
+        .secret-code-msg.secret-code-error { color: #ef4444; }
         .theme-preset-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; text-align: left; transition: all 0.2s ease; }
         .theme-preset-btn:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--accent); }
         .studio-slider { width: 100%; accent-color: var(--accent); cursor: pointer; height: 6px; background: rgba(0,0,0,0.3); border-radius: 4px; }
@@ -1077,7 +1078,7 @@
             <div class="motion-blob b6"></div>
         </div>
     </div>
-    <div class="version-tag">V3.3</div>
+    <div class="version-tag">V3.9</div>
     <button class="app-launcher-btn" onclick="openAppMenu()">APP</button>
 
     <div id="pwScrim" class="pw-scrim" onclick="closePasswordModal()"></div>
@@ -1167,43 +1168,49 @@
         <div id="dayPickerMenu" class="day-picker-menu"></div>
     </div>
 
-    <div id="sideCalendar" class="dashboard side-calendar">
-        <div class="side-dash-header">
-            <div class="side-dash-title">&#128197; Calendar</div>
-            <button class="app-nav-btn close-btn" onclick="toggleAdvancedDashboard()" aria-label="Close">&times;</button>
+    <div id="sideColLeft" class="side-col side-col-left">
+        <div id="sideCalendar" class="dashboard side-calendar">
+            <div class="side-dash-header">
+                <div class="side-dash-title">&#128197; Calendar</div>
+                <button class="app-nav-btn close-btn" onclick="toggleAdvancedDashboard()" aria-label="Close">&times;</button>
+            </div>
+            <div class="side-cal-header">
+                <button class="app-nav-btn" onclick="sideCalNavMonth(-1)" aria-label="Previous month">&larr;</button>
+                <div id="sideCalMonthLabel" class="side-cal-month-label"></div>
+                <button class="app-nav-btn" onclick="sideCalNavMonth(1)" aria-label="Next month">&rarr;</button>
+            </div>
+            <div id="sideCalGrid" class="side-cal-grid"></div>
+            <div class="side-cal-legend"><span class="side-cal-legend-dot"></span> Holiday</div>
+            <div class="side-cal-upcoming-title">Upcoming Holidays</div>
+            <div id="sideCalUpcoming"></div>
         </div>
-        <div class="side-cal-header">
-            <button class="app-nav-btn" onclick="sideCalNavMonth(-1)" aria-label="Previous month">&larr;</button>
-            <div id="sideCalMonthLabel" class="side-cal-month-label"></div>
-            <button class="app-nav-btn" onclick="sideCalNavMonth(1)" aria-label="Next month">&rarr;</button>
-        </div>
-        <div id="sideCalGrid" class="side-cal-grid"></div>
-        <div class="side-cal-legend"><span class="side-cal-legend-dot"></span> Holiday</div>
-        <div class="side-cal-upcoming-title">Upcoming Holidays</div>
-        <div id="sideCalUpcoming"></div>
 
-        <div class="side-widget-divider"></div>
-        <div class="side-widget-title">&#9989; Reminders</div>
-        <div class="reminders-input-row">
-            <input type="text" id="reminderInput" class="cd-input" placeholder="Add a reminder..." onkeydown="if(event.key==='Enter') addReminder();">
-            <button class="theme-share-btn" onclick="addReminder()">Add</button>
+        <div id="sideReminders" class="dashboard side-widget-panel">
+            <div class="side-widget-title">&#9989; Reminders</div>
+            <div class="reminders-input-row">
+                <input type="text" id="reminderInput" class="cd-input" placeholder="Add a reminder..." onkeydown="if(event.key==='Enter') addReminder();">
+                <button class="theme-share-btn" onclick="addReminder()">Add</button>
+            </div>
+            <div id="remindersList" class="reminders-list"></div>
         </div>
-        <div id="remindersList" class="reminders-list"></div>
     </div>
 
-    <div id="sideDashboard" class="dashboard side-dashboard">
-        <div class="side-dash-header">
-            <div class="side-dash-title">&#128202; Live Stats</div>
-            <button class="app-nav-btn close-btn" onclick="toggleAdvancedDashboard()" aria-label="Close">&times;</button>
+    <div id="sideColRight" class="side-col side-col-right">
+        <div id="sideDashboard" class="dashboard side-dashboard">
+            <div class="side-dash-header">
+                <div class="side-dash-title">&#128202; Live Stats</div>
+                <button class="app-nav-btn close-btn" onclick="toggleAdvancedDashboard()" aria-label="Close">&times;</button>
+            </div>
+            <div id="sideDashGrid" class="tc-grid side-dash-grid"></div>
         </div>
-        <div id="sideDashGrid" class="tc-grid side-dash-grid"></div>
 
-        <div class="side-widget-divider"></div>
-        <div class="side-widget-title">&#9201; Stopwatch</div>
-        <div id="stopwatchDisplay" class="stopwatch-display">00:00.00</div>
-        <div class="stopwatch-controls">
-            <button id="stopwatchStartBtn" class="translator-btn" onclick="toggleStopwatch()">Start</button>
-            <button class="theme-share-btn" onclick="resetStopwatch()">Reset</button>
+        <div id="sideStopwatch" class="dashboard side-widget-panel">
+            <div class="side-widget-title">&#9201; Stopwatch</div>
+            <div id="stopwatchDisplay" class="stopwatch-display">00:00.00</div>
+            <div class="stopwatch-controls">
+                <button id="stopwatchStartBtn" class="translator-btn" onclick="toggleStopwatch()">Start</button>
+                <button class="theme-share-btn" onclick="resetStopwatch()">Reset</button>
+            </div>
         </div>
     </div>
 
@@ -2264,11 +2271,112 @@
             }
         }
 
+        // --- SECRET COLORWAYS (unlocked via the code box at the bottom of Colorways Studio) ---
+        // Each entry sets every customizable theme property — base colors, border, success/break
+        // accents, font, corner radius, shadow depth, gradient background, and the lava lamp color
+        // — so a secret colorway is a complete, detailed look rather than just a couple of swapped
+        // colors. When Colorways Studio gains new customizable properties in future updates, extend
+        // these entries to set those too, so secret colorways stay fully up to date.
+        const SECRET_COLORWAYS = {
+            "NA!": {
+                name: "Baltimore Ravens",
+                "--bg-color": "#0a0612",
+                "--card-bg": "#1b0f3d",
+                "--border": "#9e7c0c",
+                "--accent": "#c9a227",
+                "--accent-success": "#e8e3d3",
+                "--accent-break": "#ffffff",
+                "--font-family": '"Oswald", sans-serif',
+                "--radius": "14px",
+                "--shadow-intensity": "0.65",
+                "--motion-bg-color": "#4b2e83",
+                "gradientBgEnabled": true
+            },
+            "PINK!": {
+                name: "Pink",
+                "--bg-color": "#1a0512",
+                "--card-bg": "#33102a",
+                "--border": "#ff4fa3",
+                "--accent": "#ff2d87",
+                "--accent-success": "#ffd6ec",
+                "--accent-break": "#ffffff",
+                "--font-family": '"Fredoka", sans-serif',
+                "--radius": "24px",
+                "--shadow-intensity": "0.55",
+                "--motion-bg-color": "#ff5fa8",
+                "gradientBgEnabled": true
+            },
+            "OIL!": {
+                name: "Edmonton Oilers",
+                "--bg-color": "#041028",
+                "--card-bg": "#0d2050",
+                "--border": "#fc4c02",
+                "--accent": "#ff6a1a",
+                "--accent-success": "#ffe0c2",
+                "--accent-break": "#ffffff",
+                "--font-family": '"Bebas Neue", sans-serif',
+                "--radius": "12px",
+                "--shadow-intensity": "0.6",
+                "--motion-bg-color": "#ff6a1a",
+                "gradientBgEnabled": true
+            }
+        };
+
+        function applySecretColorway(key) {
+            const cw = SECRET_COLORWAYS[key];
+            if (!cw) return false;
+            Object.keys(cw).forEach(prop => {
+                if (prop === "name") return;
+                if (prop === "gradientBgEnabled") { toggleGradientBackground(cw[prop]); return; }
+                if (prop === "--motion-bg-color") { updateMotionBgColor(cw[prop]); return; }
+                updateThemeProp(prop, cw[prop]);
+            });
+            syncStudioInputs();
+            return true;
+        }
+
+        function checkSecretCode() {
+            const input = document.getElementById('secretCodeInput');
+            const msg = document.getElementById('secretCodeMsg');
+            if (!input || !msg) return;
+            const raw = input.value.trim();
+            const code = raw.toUpperCase();
+            const match = Object.keys(SECRET_COLORWAYS).find(k => k.toUpperCase() === code);
+            if (match) {
+                applySecretColorway(match);
+                msg.textContent = `\u{1F513} Unlocked: ${SECRET_COLORWAYS[match].name} colorway!`;
+                msg.className = 'secret-code-msg secret-code-success';
+            } else {
+                msg.textContent = 'Invalid code.';
+                msg.className = 'secret-code-msg secret-code-error';
+            }
+            input.value = '';
+        }
+
         // --- CHANGE LOG (lives inside Customize > Change Log) ---
         // Entries marked "secret: true" mention games or the cheat-unlock system, and are
         // only shown for real once cheatsUnlocked is true. Otherwise they're folded into a
         // single generic "Bug fixes and improvements" line for that version.
         const CHANGELOG = [
+            { version: "V3.9", entries: [
+                { text: "Change Log entries about secret codes no longer spoil what they are or what they unlock", secret: false }
+            ]},
+            { version: "V3.8", entries: [
+                { text: "Added a new secret code", secret: false }
+            ]},
+            { version: "V3.7", entries: [
+                { text: "Adjusted a secret colorway's font for better readability", secret: false }
+            ]},
+            { version: "V3.6", entries: [
+                { text: "Added a new secret code", secret: false },
+                { text: "Added Comic Sans MS as a regular selectable font in Colorways Studio", secret: false }
+            ]},
+            { version: "V3.5", entries: [
+                { text: "Added a Secret Code box at the bottom of Colorways Studio for unlocking hidden colorways", secret: false }
+            ]},
+            { version: "V3.4", entries: [
+                { text: "Reminders and Stopwatch are now their own small panels stacked below Calendar and Live Stats, instead of being hidden inside them behind a scroll", secret: false }
+            ]},
             { version: "V3.3", entries: [
                 { text: "Added to Colorways Studio: a custom border color picker, a Gradient Background toggle, a Text Size slider, and quick corner-style presets (Sharp/Soft/Round/Pill)", secret: false }
             ]},
@@ -4051,6 +4159,7 @@ const COMMON_WORDS = [{"en":"hello","es":"hola","cat":"Greetings"},{"en":"goodby
                             <option value='"Bebas Neue", sans-serif'>Bebas Neue Condensed</option>
                             <option value='"Caveat", cursive'>Caveat Handwritten</option>
                             <option value='"IBM Plex Mono", monospace'>IBM Plex Technical Mono</option>
+                            <option value='"Comic Sans MS", "Comic Sans", cursive'>Comic Sans Playful</option>
                         </select>
                     </div>
                     <div class="studio-group">
@@ -4106,6 +4215,15 @@ const COMMON_WORDS = [{"en":"hello","es":"hola","cat":"Greetings"},{"en":"goodby
                         </div>
                     </div>
                     <button class="studio-btn-reset" onclick="resetStudioDefaults()">Reset Custom Styles</button>
+
+                    <div class="studio-group secret-code-group">
+                        <label>Secret Code</label>
+                        <div class="studio-row-inputs">
+                            <input type="text" id="secretCodeInput" class="cd-input" placeholder="Enter code..." onkeydown="if(event.key==='Enter') checkSecretCode();">
+                            <button class="theme-share-btn" onclick="checkSecretCode()">Unlock</button>
+                        </div>
+                        <div id="secretCodeMsg" class="secret-code-msg"></div>
+                    </div>
                 </div>
             `,
             changelog: () => `
